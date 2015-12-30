@@ -1,0 +1,22 @@
+{
+	"name": "soon",
+	"version": "1.0.0",
+	"description": "Soon is a Service-as-a-Service to create, search for, follow, manipulate and get updates on events.",
+	"main": "server.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/dot-louis/soon.git"
+	},
+	"author": "dot-louis",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/dot-louis/soon/issues"
+	},
+	"homepage": "https://github.com/dot-louis/soon#readme",
+	"dependencies": {
+		"express": "^4.13.3"
+	}
+}
