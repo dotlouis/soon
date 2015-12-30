@@ -8,5 +8,9 @@ app.get('/', function (req, res) {
   res.send('Hello world\n');
 });
 
-app.listen(APP_PORT);
-console.log('Running on http://localhost:' + APP_PORT);
+var server = app.listen(APP_PORT, function(){
+  var host = server.address().address;
+  var port = server.address().port;
+
+  console.log('Example app listening at http://%s:%s', host, port);
+});
