@@ -19,9 +19,10 @@ docker pull dotlouis/soon
 # -p to bind local port to container port
 # -v to mount local folder to container folder (:ro) for read only
 # --restart:on-failure:5 to restart the container if it crashes (5 times max)
+# --name to assign a name to the container here it's an api server
 # -d to run in detached mode
 # -t to allocate a pseudo tty (allows top command)
-docker run -p 8080:8080 -v <LOCAL_PATH>:/usr/app/src/:ro --restart:on-failure:5 -dt dotlouis/soon
+docker run -p 8080:8080 -v <LOCAL_PATH>:/usr/app/src/:ro --restart:on-failure:5 --name api_server -dt dotlouis/soon
 
 # if you run docker through docker-machine the LOCAL_PATH
 # is the one of the VM (which is linked to your host system
