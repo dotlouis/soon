@@ -87,3 +87,15 @@ You can now check the server running at:
 - `docker start -ai CONTAINER_ID` to start a container and attach immediately to it. Useful to see logs if a container is immediately crashing after starting/running.
 - `docker logs -f` to stream logs from a container.
 - `docker restart -t 0 CONTAINER_ID` to immediately restart a container
+
+
+# Testing performances
+
+Running an apache bench makes up for a good idea of the performances of our
+application.
+```bash
+# -n for 10000 requests
+# -c for a conccurency of 10
+# -r not to stop at failed requests
+ab -n 10000 -c 10 -r MACHINE_IP:8080/
+```
