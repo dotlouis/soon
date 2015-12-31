@@ -17,14 +17,41 @@ docker pull dotlouis/soon
 
 # run the container
 # -p to bind local port to container port
-# -v to mount local folder to container folder
+# -v to mount local folder to container folder (:ro) for read only
+# --restart:on-failure:5 to restart the container if it crashes (5 times max)
 # -d to run in detached mode
-docker run -p 8080:8080 -v <LOCAL_PATH>:/usr/app/src/ -d dotlouis/soon
+# -t to allocate a pseudo tty (allows top command)
+docker run -p 8080:8080 -v <LOCAL_PATH>:/usr/app/src/:ro --restart:on-failure:5 -dt dotlouis/soon
 
 # if you run docker through docker-machine the LOCAL_PATH
 # is the one of the VM (which is linked to your host system
 # automatically) for example /Users/louis/Dev/soon
 ```
+
+#### Development workflow
+
+You can mount the local filesystem to the container (with the -v option) so you can
+change files locally without having to rebuild the docker image.
+
+Also you will probably want to play with new modules without having to rebuild
+the docker image every time you add a new npm module.
+You can `npm install` on your local folder. Because that folder is mounted,
+changes in node_modules will be reflected inside the container.
+The container structure now looks like this:
+
+```bash
+/usr/app
+	node_modules/  # <== built from the image
+	src/ # current directory
+		node_modules/ # <== mounted from the local filesystem
+		server.js
+		...
+```
+Because of the way nodes looks for node_modules, it will use in priority
+the node_modules/ in the current directory.
+
+When a change is made locally, run `docker restart -t 0 CONTAINER_ID` to restart
+the server.
 
 ### YUNO using Docker ?
 
@@ -58,3 +85,4 @@ You can now check the server running at:
 - `docker exec -ti CONTAINER_ID /bin/bash` to start a shell in a running container.
 - `docker start -ai CONTAINER_ID` to start a container and attach immediately to it. Useful to see logs if a container is immediately crashing after starting/running.
 - `docker logs -f` to stream logs from a container.
+- `docker restart -t 0 CONTAINER_ID` to immediately restart a container
