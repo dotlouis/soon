@@ -1,7 +1,7 @@
 # soon
 Soon is a Service-as-a-Service to create, search for, follow, manipulate and get updates on events.
 
-## Install
+## Install & Deploy
 
 1. Clone the repository `git clone git@github.com:dot-louis/soon.git`
 
@@ -22,7 +22,7 @@ docker pull dotlouis/soon
 # --name to assign a name to the container here it's an api server
 # -d to run in detached mode
 # -t to allocate a pseudo tty (allows top command)
-docker run -p 8080:8080 -v <LOCAL_PATH>:/usr/app/src/:ro --restart:on-failure:5 --name api_server -dt dotlouis/soon
+docker run -p 8080:8080 -v <LOCAL_PATH>:/usr/workspace/app/:ro --restart:on-failure:5 --name api_server -dt dotlouis/soon
 
 # if you run docker through docker-machine the LOCAL_PATH
 # is the one of the VM (which is linked to your host system
@@ -41,11 +41,11 @@ changes in node_modules will be reflected inside the container.
 The container structure now looks like this:
 
 ```bash
-/usr/app
+/usr/workspace
 	node_modules/  # <== built from the image
-	src/ # current directory
+	app/ # current directory
 		node_modules/ # <== mounted from the local filesystem
-		server.js
+		src/
 		...
 ```
 Because of the way nodes looks for node_modules, it will use in priority
@@ -62,14 +62,14 @@ This assumes you have node installed. See the Dockerfile to get the recommended 
 # install node dependencies
 npm install
 
-# set environnement variables
+# set environment variables
 export APP_PORT=8080
 
 # run the server
 npm start
 ```
 
-# Use
+## Use
 
 You can now check the server running at:
 
@@ -89,7 +89,7 @@ You can now check the server running at:
 - `docker restart -t 0 CONTAINER_ID` to immediately restart a container
 
 
-# Testing performances
+## Testing performances
 
 Running an apache bench makes up for a good idea of the performances of our
 application.
@@ -99,3 +99,12 @@ application.
 # -r not to stop at failed requests
 ab -n 10000 -c 10 -r MACHINE_IP:8080/
 ```
+
+## Transpilation
+
+The app uses bleeding edge Javascript (stage-0 and up Ecmascript proposals).
+This enables the use of features such as async/awaits, generators, template strings, es6 modules import, arrow functions and more.
+
+At this time Node 5.3 does not fully ship with all of theses features. Thus we use Babel to transpile the JS into ES5.
+
+Transpilation is done at runtime with the [require hook](https://babeljs.io/docs/usage/require/)

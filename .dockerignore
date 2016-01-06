@@ -1,0 +1,4 @@
+# don't add, copy or mount into the image
+node_modules/
+*.log
+.envrc
