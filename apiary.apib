@@ -1,0 +1,137 @@
+FORMAT: 1A
+HOST: https://soon.apiblueprint.org/
+
+# Soon
+
+Soon is a Service-as-a-Service to create, search for, follow, manipulate and get updates on events.
+Soon uses http2 pushes to alert you about events.
+
+## Event Collection [/events]
+
+### List Events [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id": "eventId",
+                "title": "Potions",
+                "createdAt": "2015-12-17T22:35:37.990Z",
+                "updatedAt": "2015-12-17T22:35:37.990Z",
+                "created_by": {
+                    "name": "Harry Potter",
+                    "id": "someid"
+                },
+                "body": "Mixing up some #polyjuice in a #cauldron",
+                "tags": [
+                    "#polyjuice",
+                    "#cauldron"
+                ],
+                "access": "private",
+                "visibility": "hidden",
+                "followersCount": 24,
+                "followersChunk": [
+                    {
+                        "name": "Hermione Granger"
+                        "id": "someOtherId"
+                    },
+                    {
+                        "name": "Ron Weasley"
+                        "id": "yetAnotherId"
+                    }
+                ],
+                "rrule": "FREQ=WEEKLY;DTSTART=20151217T090000Z;INTERVAL=2;WKST=MO;BYDAY=FR",
+                "nextOccurence": {
+                    "start": "2015-12-18T09:00:00.000Z",
+                    "end": "2015-12-18T10:30:00.000Z",
+                    "duration": "PT1H30M"
+                },
+                "flags": [
+                    {
+                        "key": "location",
+                        "applyFrom": "ALL",
+                        "applyTo": "ALL",
+                        "value": "Hogwarts dungeons",
+                        "createdAt": "2015-12-18T10:05:54.179Z",
+                        "createdBy": {
+                            "name": "Albus Dumbledore",
+                            "id": "aRandomId"
+                        }
+                    },
+                    {
+                        "key": "teacher",
+                        "applyFrom": "2015-12-18T09:00:00.000Z",
+                        "applyTo": "ALL",
+                        "value": "Severus Snape",
+                        "createdAt": "2015-12-18T10:05:54.179Z",
+                        "createdBy": {
+                            "name": "Albus Dumbledore",
+                            "id": "aRandomId"
+                        }
+                    },
+                    {
+                        "key": "comment",
+                        "applyFrom": "ALL",
+                        "applyTo": "ALL",
+                        "value": "Horace Slughorn is a Mudblood !",
+                        "createdAt": "2015-12-18T10:05:54.179Z",
+                        "createdBy": {
+                            "name": "Draco Malfoy",
+                            "id": "anotherRandomId"
+                        }
+                    }
+                ]
+                
+            }
+        ]
+
+### Create an Event [POST]
+
+You may create your own event using this action. It takes a JSON
+object containing the event's details
+
++ Request (application/json)
+
+        {
+            "title": "Defense against the dark arts",
+            "body": "#deatheaters take care",
+            "createdBy": "Mad-Eye",
+            "rrule": "FREQ=WEEKLY;INTERVAL=2;WKST=MO",
+            "host": '
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /events/2
+
+    + Body
+
+            {
+                "title": "Defense against the dark arts",
+                "created_at": "2015-12-17T22:35:37.990Z",
+                "updated_at": "2015-12-17T22:35:37.990Z",
+                "created_by": "Mad-Eye",
+                "body": "Mixing up some #polyjuice in a #cauldron",
+                "tags": [
+                    "#polyjuice",
+                    "#cauldron"
+                ],
+                "rrule": "FREQ=WEEKLY;WKST=WE",
+                "followers": [
+                    {
+                        "name": "Severus Snape",
+                        "host": true
+                    },
+                    {
+                        "name": "Harry Potter"
+                    },
+                    {
+                        "name": "Ron Weasley"
+                    },
+                    {
+                        "name": "Hermione Granger"
+                    }
+                ]
+            }
