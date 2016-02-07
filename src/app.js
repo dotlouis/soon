@@ -1,4 +1,5 @@
 import express from 'express';
+import bodyParser from 'body-parser';
 import log,{requestLogger} from './logger/logger';
 import * as ENV from './env';
 import router from './routes';
@@ -7,6 +8,7 @@ import router from './routes';
 const app = express();
 
 // use middlewares
+app.use(bodyParser.json());
 app.use(requestLogger);
 app.use(router);
 
