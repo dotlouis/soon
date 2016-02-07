@@ -7,4 +7,4 @@ require('babel-register')({
 	"compact": false,
 	"comments": true
 });
-require('./server');
+require('./app');
