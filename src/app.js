@@ -1,4 +1,5 @@
 import express from 'express';
+import log,{requestLogger} from './logger/logger';
 import * as ENV from './env';
 import router from './routes';
 
@@ -6,6 +7,7 @@ import router from './routes';
 const app = express();
 
 // use middlewares
+app.use(requestLogger);
 app.use(router);
 
 // listen incoming connections
@@ -14,8 +16,10 @@ app.use(router);
 		let server = await app.listen(ENV.APP_PORT);
 		let host = server.address().address;
 		let port = server.address().port;
+		log.info(`API available at http://${host}:${port}${ENV.API_PATH}`);
 	}
 	catch(err){
+ 		log.fatal(err);
 	}
 })();
 
