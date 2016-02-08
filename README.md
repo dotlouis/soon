@@ -15,5 +15,3 @@ git clone git@github.com:dot-louis/soon.git
 npm install
 npm start
 ```
-
-
