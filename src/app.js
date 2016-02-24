@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import log,{requestLogger, errorLogger} from './logger/logger';
 import * as ENV from './env';
 import mainRouter from './main-router/main-router';
+import mongoose from './mongoose/mongoose';
 
 // create the express app
 const app = express();

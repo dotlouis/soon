@@ -1,13 +1,15 @@
 import express from 'express';
 import Event from './event.model';
-import {debug} from '../logger/logger';
+import {wrap, delay} from '../utils/utils';
 
 let router = express.Router();
 
 router.route('/')
-.post((req, res)=>{
-	debug(req.body);
-	res.json(new Event());
-});
+.post(wrap(async(req, res)=>{
+	let e = new Event(req.body);
+	await e.save();
+	// await delay(1000, 'booo', true);
+	res.send(e);
+}));
 
 export default router;
