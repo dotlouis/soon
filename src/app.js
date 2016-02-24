@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import log,{requestLogger} from './logger/logger';
 import * as ENV from './env';
-import router from './routes';
+import mainRouter from './main-router/main-router';
 
 // create the express app
 const app = express();
@@ -10,7 +10,7 @@ const app = express();
 // use middlewares
 app.use(bodyParser.json());
 app.use(requestLogger);
-app.use(router);
+app.use(mainRouter);
 
 // listen incoming connections
 (async()=>{
