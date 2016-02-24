@@ -1,16 +1,19 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import log,{requestLogger} from './logger/logger';
+import log,{requestLogger, errorLogger} from './logger/logger';
 import * as ENV from './env';
 import mainRouter from './main-router/main-router';
 
 // create the express app
 const app = express();
 
-// use middlewares
-app.use(bodyParser.json());
+// middlewares (order matters)
 app.use(requestLogger);
+app.use(bodyParser.json());
 app.use(mainRouter);
+
+// error handlers
+app.use(errorLogger);
 
 // listen incoming connections
 (async()=>{
