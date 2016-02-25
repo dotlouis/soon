@@ -30,7 +30,7 @@
 		"express-bunyan-logger": "^1.2.0",
 		"moment": "^2.11.2",
 		"mongoose": "^4.4.2",
-		"mongoose-model-decorators": "^0.2.4",
+		"mongoose-model-decorators": "^0.3.0",
 		"mongoose-private-paths": "^0.6.3"
 	}
 }
