@@ -1,14 +1,16 @@
 import moment from 'moment';
+import {defaultSchema} from '../mongoose/mongoose';
 import {Model, pre} from 'mongoose-model-decorators';
 
-@Model({timestamps: true})
+@Model({ timestamps: true })
 class Event{
 
-	static schema = {
+	// inherit the default mongoose schema
+	static schema = Object.assign({
 		start: { type: Date, required: true },
 		end: { type: Date, required: true },
 		duration: { type: String }
-	};
+	}, defaultSchema);
 
 	// This method act as a constructor
 	// Used to process complex params default
