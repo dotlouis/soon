@@ -12,49 +12,34 @@ class Event{
 		duration: { type: String, required: true }
 	}, defaultSchema);
 
-	// This method act as a constructor
-	// Used to process complex params default
-	static spawn(params = {}){
-		let event = Object.assign({},
-			computeTimes(params) // start, end, duration
-		);
+	@pre('validate')
+	computeTimes(next){
+		let start, end, duration;
+		start = moment(this.start) || moment();
 
-		// "real" constructor with params as defined in the schema
-		return (new this(event));
+		// end parameter take precedence over duration
+		if(this.end){
+			end = moment(this.end);
+			duration = moment.duration(end.diff(start));
+		}
+
+		// you can specify a duration rather than an end
+		else if(this.duration){
+			duration = moment.duration(this.duration);
+			end = moment(start).add(duration);
+		}
+
+		// if none are specified, the default event is 1h
+		else{
+			duration = moment.duration(1, 'h');
+			end = moment(start).add(duration);
+		}
+
+		this.start = start;
+		this.end = end;
+		this.duration = duration;
+		next();
 	}
 }
 
-function computeTimes(params){
-	let start, end, duration;
-	start = moment(params.start) || moment();
-
-	// end parameter take precedence over duration
-	if(params.end){
-		end = moment(params.end);
-		duration = moment.duration(end.diff(start));
-	}
-
-	// you can specify a duration rather than an end
-	else if(params.duration){
-		duration = moment.duration(params.duration);
-		end = moment(start).add(duration);
-	}
-
-	// if none are specified, the default event is 1h
-	else{
-		duration = moment.duration(1, 'h');
-		end = moment(start).add(duration);
-	}
-
-	return { start, end, duration };
-}
-
-// Allows to call `new Event()` when importing this file
-// Does the same thing as `Event.spawn()`
-// TODO create a @construct decorator to abstract this
-export default class extends Event{
-	constructor(params){
-		super();
-		return Event.spawn(params);
-	}
-}
+export default Event;
