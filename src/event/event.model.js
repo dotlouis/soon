@@ -1,6 +1,6 @@
 import moment from 'moment';
-import {defaultSchema} from '../mongoose/mongoose';
-import {Model, pre} from 'mongoose-model-decorators';
+import {ObjectId, defaultSchema} from '../mongoose/mongoose';
+import {Model, pre, post} from 'mongoose-model-decorators';
 
 @Model({ timestamps: true })
 class Event{
@@ -9,7 +9,8 @@ class Event{
 	static schema = Object.assign({
 		start: { type: Date, required: true },
 		end: { type: Date, required: true },
-		duration: { type: String, required: true }
+		duration: { type: String, required: true },
+		chain: { type: ObjectId, ref: 'Chain', required: true }	// the chain the event is linked to
 	}, defaultSchema);
 
 	@pre('validate')
@@ -39,6 +40,10 @@ class Event{
 		this.end = end;
 		this.duration = duration;
 		next();
+	}
+
+	addTo(chain){
+		this.chain = chain._id;
 	}
 }
 

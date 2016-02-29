@@ -18,5 +18,8 @@ export const defaultSchema = {
 	__v: { type: Number, private: true }
 };
 
+// helper to declare ObjectId type of a schema
+export const ObjectId = mongoose.Schema.Types.ObjectId;
+
 connection.on('error', err=>log.error(new Error(err)));
 connection.once('open', ()=>log.info(`Connected to ${ENV.MONGO_URL}`));

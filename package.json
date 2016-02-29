@@ -28,6 +28,7 @@
 		"bunyan": "^1.5.1",
 		"express": "^4.13.3",
 		"express-bunyan-logger": "^1.2.0",
+		"extend-error": "https://github.com/jayyvis/extend-error/tarball/master",
 		"moment": "^2.11.2",
 		"mongoose": "^4.4.2",
 		"mongoose-model-decorators": "^0.3.0",
