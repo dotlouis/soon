@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import log,{requestLogger, errorLogger} from './logger/logger';
+import errorHandler,{shutdownOnError} from './error-handler/error-handler';
 import * as ENV from './env';
 import mongoose from './mongoose/mongoose'; // must import before models (router)
 import mainRouter from './main-router/main-router';
@@ -13,8 +14,10 @@ app.use(requestLogger);
 app.use(bodyParser.json());
 app.use(mainRouter);
 
-// error handlers
+// error handlers (order matters)
+app.use(errorHandler);
 app.use(errorLogger);
+app.use(shutdownOnError);
 
 // listen incoming connections
 (async()=>{

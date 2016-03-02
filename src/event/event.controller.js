@@ -1,5 +1,5 @@
 import express from 'express';
-import {NotFoundError, NoContentError} from '../errors/errors';
+import * as Err from '../errors/errors';
 import Event from './event.model';
 import Chain from '../chain/chain.model';
 import {wrap, delay} from '../utils/utils';
@@ -10,42 +10,36 @@ router.route('/:id')
 // get by id
 .get(wrap(async(req, res)=>{
 	try{
-		let event = await NotFoundError.notFoundify(Event.findById(req.params.id).exec());
+		let event = await Event.findById(req.params.id).exec();
+		if(!event)
+			throw new Err.NotFound();
 		res.json(event);
 	}
 	catch(err){
 		switch(err.name){
-			case 'NotFoundError':
-				req.log.warn(err);
-				res.sendStatus(404);
-				break;
 			case 'CastError':
-				req.log.warn(err);
-				res.status(400).send('Wrong id format');
+				throw new Err.BadRequest('Wrong id format for event');
 				break;
-		default:
-			throw err;
+			default:
+				throw err;
 		}
 	}
 }))
 // delete by id
 .delete(wrap(async(req,res)=>{
 	try{
-		let event = await NotFoundError.notFoundify(Event.findByIdAndRemove(req.params.id).exec());
+		let event = await Event.findByIdAndRemove(req.params.id).exec();
+		if(!event)
+			throw new Err.NotFound();
 		res.sendStatus(200);
 	}
 	catch(err){
 		switch(err.name){
-			case 'NotFoundError':
-				req.log.warn(err);
-				res.sendStatus(404);
-				break;
 			case 'CastError':
-				req.log.warn(err);
-				res.status(400).send('Wrong id format');
+				throw new Err.BadRequest('Wrong id format for event');
 				break;
-		default:
-			throw err;
+			default:
+				throw err;
 		}
 	}
 }));
@@ -54,18 +48,13 @@ router.route('/')
 // get all
 .get(wrap(async(req, res)=>{
 	try{
-		let events = await NoContentError.noContentify(Event.find().exec());
+		let events = await Event.find().exec();
+		if(events.length === 0)
+			throw new Err.NoContent();
 		res.json(events);
 	}
 	catch(err){
-		switch(err.name){
-			case 'NoContentError':
-				req.log.warn(err);
-				res.sendStatus(204);
-				break;
-		default:
-			throw err;
-		}
+		throw err;
 	}
 }))
 // create
@@ -77,8 +66,11 @@ router.route('/')
 		event = new Event(req.body);
 
 		// either link to an existing chain or create a new one
-		if(req.body.chain)
-			chain = await NotFoundError.notFoundify(Chain.findById(req.body.chain).exec());
+		if(req.body.chain){
+			chain = await Chain.findById(req.body.chain).exec();
+			if(!chain)
+				throw new Err.BadRequest('A chain with the given ID does not exists');
+		}
 		else
 			chain = new Chain();
 
@@ -93,16 +85,12 @@ router.route('/')
 	}
 	catch(err){
 		switch(err.name){
-			case 'NotFoundError':
-				req.log.warn(err);
-				res.status(400).send(`Can't create Event, because a chain with the given ID does not exists`);
-				break;
 			case 'CastError':
-				req.log.warn(err);
-				res.status(400).send(`Can't create Event, because the given chain ID is a wrong format`);
+			case 'ValidationError':
+				throw new Err.BadRequest('Some data is wrong format');
 				break;
-		default:
-			throw err;
+			default:
+				throw err;
 		}
 	}
 }));
