@@ -17,9 +17,7 @@ const debug = (obj) => logger.debug({debug:obj});
 
 // A middleware that will log requests
 const requestLogger = bunyanRequest({
-	logger: logger,
-	// excludes all properties for non-error requests
-	excludes: ['*']
+	logger: logger
 });
 // An errorHandler middleware that will log errors
 const errorLogger = bunyanRequest.errorLogger({
