@@ -1,5 +1,5 @@
 import express from 'express';
-import * as Err from '../errors/errors';
+import {BadRequest, NoContent, NotFound} from '../errors/errors';
 import Event from './event.model';
 import Chain from '../chain/chain.model';
 import {wrap, delay} from '../utils/utils';
@@ -12,13 +12,13 @@ router.route('/:id')
 	try{
 		let event = await Event.findById(req.params.id).exec();
 		if(!event)
-			throw new Err.NotFound();
+			throw new NotFound();
 		res.json(event);
 	}
 	catch(err){
 		switch(err.name){
 			case 'CastError':
-				throw new Err.BadRequest('Wrong id format for event');
+				throw new BadRequest('Wrong id format for event');
 				break;
 			default:
 				throw err;
@@ -30,13 +30,13 @@ router.route('/:id')
 	try{
 		let event = await Event.findByIdAndRemove(req.params.id).exec();
 		if(!event)
-			throw new Err.NotFound();
+			throw new NotFound();
 		res.sendStatus(200);
 	}
 	catch(err){
 		switch(err.name){
 			case 'CastError':
-				throw new Err.BadRequest('Wrong id format for event');
+				throw new BadRequest('Wrong id format for event');
 				break;
 			default:
 				throw err;
@@ -50,7 +50,7 @@ router.route('/')
 	try{
 		let events = await Event.find().exec();
 		if(events.length === 0)
-			throw new Err.NoContent();
+			throw new NoContent();
 		res.json(events);
 	}
 	catch(err){
@@ -69,7 +69,7 @@ router.route('/')
 		if(req.body.chain){
 			chain = await Chain.findById(req.body.chain).exec();
 			if(!chain)
-				throw new Err.BadRequest('A chain with the given ID does not exists');
+				throw new BadRequest('A chain with the given ID does not exists');
 		}
 		else
 			chain = new Chain();
@@ -87,7 +87,7 @@ router.route('/')
 		switch(err.name){
 			case 'CastError':
 			case 'ValidationError':
-				throw new Err.BadRequest('Some data is wrong format');
+				throw new BadRequest('Some data is wrong format');
 				break;
 			default:
 				throw err;
