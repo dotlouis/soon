@@ -2,13 +2,11 @@ import express from 'express';
 import {BadRequest, NoContent, NotFound} from '../errors/errors';
 import Event from './event.model';
 import Chain from '../chain/chain.model';
-import {wrap, delay} from '../utils/utils';
+import {wrap} from '../utils/utils';
 
-let router = express.Router();
+let EventController = {};
 
-router.route('/:id')
-// get by id
-.get(wrap(async(req, res)=>{
+EventController.getById = wrap(async(req, res)=>{
 	try{
 		let event = await Event.findById(req.params.id).exec();
 		if(!event)
@@ -24,9 +22,9 @@ router.route('/:id')
 				throw err;
 		}
 	}
-}))
-// delete by id
-.delete(wrap(async(req,res)=>{
+});
+
+EventController.deleteById = wrap(async(req, res)=>{
 	try{
 		let event = await Event.findByIdAndRemove(req.params.id).exec();
 		if(!event)
@@ -42,11 +40,9 @@ router.route('/:id')
 				throw err;
 		}
 	}
-}));
+});
 
-router.route('/')
-// get all
-.get(wrap(async(req, res)=>{
+EventController.getAll = wrap(async(req, res)=>{
 	try{
 		let events = await Event.find().exec();
 		if(events.length === 0)
@@ -56,9 +52,9 @@ router.route('/')
 	catch(err){
 		throw err;
 	}
-}))
-// create
-.post(wrap(async(req, res)=>{
+});
+
+EventController.create = wrap(async(req, res)=>{
 	try {
 		let chain, event;
 
@@ -91,7 +87,16 @@ router.route('/')
 				throw err;
 		}
 	}
-}));
+});
+let router = express.Router();
+
+router.route('/:id')
+.get(EventController.getById)
+.delete(EventController.deleteById);
+
+router.route('/')
+.get(EventController.getAll)
+.post(EventController.create);
 
 /* TODO
 ¨* - HEAD (check if a record exists)
