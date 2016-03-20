@@ -62,10 +62,14 @@ EventController.create = wrap(async(req, res)=>{
 		event = new Event(req.body);
 
 		// either link to an existing chain or create a new one
-		if(req.body.chain){
-			chain = await Chain.findById(req.body.chain).exec();
+		if(req.body.linkTo){
+			let linkedEvent = await Event.findById(req.body.linkTo).exec();
+			if(!linkedEvent)
+				throw new NotFound('Cannot find event to link the event to');
+
+			chain = await Chain.findById(linkedEvent.chain).exec();
 			if(!chain)
-				throw new BadRequest('A chain with the given ID does not exists');
+				throw new NotFound('Cannot find chain to link the event to');
 		}
 		else
 			chain = new Chain();
@@ -88,7 +92,36 @@ EventController.create = wrap(async(req, res)=>{
 		}
 	}
 });
+
+EventController.getRelated = wrap(async(req, res)=>{
+	try{
+		let event = await Event.findById(req.params.id).exec();
+		if(!event)
+			throw new NotFound();
+
+		let relatedEvents = await Event.find({
+			chain: event.chain
+		}).exec();
+
+		if(relatedEvents.length === 0)
+			throw new NoContent();
+		res.json(relatedEvents);
+	}
+	catch(err){
+		switch(err.name){
+			case 'CastError':
+				throw new BadRequest('Wrong id format');
+				break;
+			default:
+				throw err;
+		}
+	}
+});
+
 let router = express.Router();
+
+router.route('/:id/related')
+.get(EventController.getRelated);
 
 router.route('/:id')
 .get(EventController.getById)

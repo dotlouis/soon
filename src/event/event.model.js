@@ -7,10 +7,10 @@ class Event{
 
 	// inherit the default mongoose schema
 	static schema = Object.assign({
+		chain: { type: ObjectId, ref:'Chain', required: true, private: true },	// the chain the event is linked to
 		start: { type: Date, required: true },
 		end: { type: Date, required: true },
-		duration: { type: String, required: true },
-		chain: { type: ObjectId, ref: 'Chain', required: true }	// the chain the event is linked to
+		duration: { type: String, required: true }
 	}, defaultSchema);
 
 	@pre('validate')
