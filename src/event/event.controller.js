@@ -93,6 +93,35 @@ EventController.create = wrap(async(req, res)=>{
 	}
 });
 
+EventController.betweenById = wrap(async(req, res)=>{
+	try{
+		let event = await Event.findById(req.params.id).exec();
+		if(!event)
+			throw new NotFound();
+
+		let virtuals = event.generateVirtuals({
+			after: req.body.after,
+			before: req.body.before
+		});
+
+		// TODO
+		// do not save virtual events again if there are already in DB
+
+		// save generated virtual events
+		let virtualEvents = await Event.insertMany(virtuals);
+		res.json(virtualEvents);
+	}
+	catch(err){
+		switch(err.name){
+			case 'CastError':
+				throw new BadRequest('Wrong id format');
+				break;
+			default:
+				throw err;
+		}
+	}
+});
+
 EventController.getRelated = wrap(async(req, res)=>{
 	try{
 		let event = await Event.findById(req.params.id).exec();
@@ -122,6 +151,11 @@ let router = express.Router();
 
 router.route('/:id/related')
 .get(EventController.getRelated);
+
+router.route('/:id/between')
+.get(EventController.betweenById)
+// some systems does not accept body parameters for GET
+.post(EventController.betweenById);
 
 router.route('/:id')
 .get(EventController.getById)
