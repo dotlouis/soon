@@ -16,7 +16,7 @@ EventController.getById = wrap(async(req, res)=>{
 	catch(err){
 		switch(err.name){
 			case 'CastError':
-				throw new BadRequest('Wrong id format for event');
+				throw new BadRequest('Wrong id format');
 				break;
 			default:
 				throw err;
@@ -34,7 +34,7 @@ EventController.deleteById = wrap(async(req, res)=>{
 	catch(err){
 		switch(err.name){
 			case 'CastError':
-				throw new BadRequest('Wrong id format for event');
+				throw new BadRequest('Wrong id format');
 				break;
 			default:
 				throw err;
