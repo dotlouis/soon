@@ -1,7 +1,6 @@
 import express from 'express';
 import {NotFound} from '../errors/errors';
 import eventRouter from '../event/event.controller';
-import chainRouter from '../chain/chain.controller';
 
 // CAUTION: order is important
 // precises routes first, global routes last

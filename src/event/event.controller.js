@@ -74,8 +74,6 @@ router.route('/')
 		else
 			chain = new Chain();
 
-		// link the chain to the event
-		chain.add(event);
 		// link the event to the chain
 		event.addTo(chain);
 
