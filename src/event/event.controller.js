@@ -1,4 +1,5 @@
 import express from 'express';
+import range from '../range/range';
 import {BadRequest, NoContent, NotFound} from '../errors/errors';
 import Event from './event.model';
 import Chain from '../chain/chain.model';
@@ -93,26 +94,34 @@ EventController.create = wrap(async(req, res)=>{
 	}
 });
 
-EventController.betweenById = wrap(async(req, res)=>{
+EventController.between = wrap(async(req, res)=>{
 	try{
-		let event = await Event.findById(req.params.id).exec();
-		if(!event)
-			throw new NotFound();
+		let chains = await Event.find({
+			_id: { $in: req.body.scope }
+		}).distinct('chain').exec();
+		if(chains.length === 0)
+			throw new NotFound(`Can't find specified ids`);
 
-		let virtuals = event.generateVirtuals({
-			after: req.body.after,
-			before: req.body.before
-		});
+		// get range from parameters
+		let {start: after, end: before, duration: span} = range({
+			rangeLength: 1,
+			rangeUnit: 'months'
+		})(req.body.after, req.body.before, req.body.span);
 
-		// TODO
-		// do not save virtual events again if there are already in DB
+		// Retreive the events in this date range
+		let existingEvents = await Event.find({
+			chain: { $in: chains },
+			start: { '$lt': before },
+			end: { '$gte': after }
+		}).exec();
 
-		// save generated virtual events
-		let virtualEvents = await Event.insertMany(virtuals);
-		res.json(virtualEvents);
+		res.json(existingEvents);
 	}
 	catch(err){
 		switch(err.name){
+			case 'RangeError':
+				throw new BadRequest(err);
+				break;
 			case 'CastError':
 				throw new BadRequest('Wrong id format');
 				break;
@@ -152,14 +161,14 @@ let router = express.Router();
 router.route('/:id/related')
 .get(EventController.getRelated);
 
-router.route('/:id/between')
-.get(EventController.betweenById)
-// some systems does not accept body parameters for GET
-.post(EventController.betweenById);
-
 router.route('/:id')
 .get(EventController.getById)
 .delete(EventController.deleteById);
+
+router.route('/between')
+.get(EventController.between)
+// some systems does not accept body parameters for GET
+.post(EventController.between);
 
 router.route('/')
 .get(EventController.getAll)
