@@ -1,4 +1,4 @@
-import moment from 'moment';
+import range from '../range/range';
 import {BadRequest} from '../errors/errors';
 import {RRule, RRuleSet, rrulestr} from 'rrule';
 import {ObjectId, defaultSchema} from '../mongoose/mongoose';
@@ -20,26 +20,10 @@ class Event{
 	@pre('validate')
 	computeTimes(next){
 		try{
-			let start, end, duration;
-			start = moment(this.start) || moment();
-
-			// end parameter take precedence over duration
-			if(this.end){
-				end = moment(this.end);
-				duration = moment.duration(end.diff(start));
-			}
-
-			// you can specify a duration rather than an end
-			else if(this.duration){
-				duration = moment.duration(this.duration);
-				end = moment(start).add(duration);
-			}
-
-			// if none are specified, the default event is 1h
-			else{
-				duration = moment.duration(1, 'h');
-				end = moment(start).add(duration);
-			}
+			let {start, end, duration} = range({
+				rangeLength: 1,
+				rangeUnit: 'hours'
+			})(this.start, this.end, this.duration);
 
 			this.start = start;
 			this.end = end;
