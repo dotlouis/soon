@@ -30,7 +30,13 @@ class Event{
 			this.duration = duration;
 		}
 		catch(err){
-			throw new BadRequest('Wrong start and/or end and/or duration format');
+			switch(err.name){
+				case 'RangeError':
+					throw err;
+					break;
+				default:
+					throw new BadRequest('Wrong start and/or end and/or duration format');
+			}
 		}
 		next();
 	}
