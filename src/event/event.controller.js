@@ -17,7 +17,7 @@ EventController.getById = wrap(async(req, res)=>{
 	catch(err){
 		switch(err.name){
 			case 'CastError':
-				throw new BadRequest('Wrong id format');
+				throw new BadRequest(err);
 				break;
 			default:
 				throw err;
@@ -35,7 +35,7 @@ EventController.deleteById = wrap(async(req, res)=>{
 	catch(err){
 		switch(err.name){
 			case 'CastError':
-				throw new BadRequest('Wrong id format');
+				throw new BadRequest(err);
 				break;
 			default:
 				throw err;
@@ -86,7 +86,8 @@ EventController.create = wrap(async(req, res)=>{
 		switch(err.name){
 			case 'CastError':
 			case 'ValidationError':
-				throw new BadRequest('Some data is wrong format');
+			case 'RangeError':
+				throw new BadRequest(err);
 				break;
 			default:
 				throw err;
@@ -119,11 +120,9 @@ EventController.between = wrap(async(req, res)=>{
 	}
 	catch(err){
 		switch(err.name){
+			case 'CastError':
 			case 'RangeError':
 				throw new BadRequest(err);
-				break;
-			case 'CastError':
-				throw new BadRequest('Wrong id format');
 				break;
 			default:
 				throw err;
@@ -148,7 +147,7 @@ EventController.getRelated = wrap(async(req, res)=>{
 	catch(err){
 		switch(err.name){
 			case 'CastError':
-				throw new BadRequest('Wrong id format');
+				throw new BadRequest(err);
 				break;
 			default:
 				throw err;
