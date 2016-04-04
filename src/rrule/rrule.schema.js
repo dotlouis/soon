@@ -49,14 +49,18 @@ class RRuleSchema{
 			this.count = MAX_COUNT;
 	}
 
-	generate(){
-		return new RRule({
+	generate(between){
+		let rrule = new RRule({
 			freq: RRule[this.freq],
 			dtstart: this._dtstart,
 			count: this.count,
 			interval: this.interval,
 			until: this.until
-		}).all();
+		});
+
+		if(between && between.after && between.before)
+			return rrule.between(between.after, between.before);
+		return rrule.all();
 	}
 }
 
