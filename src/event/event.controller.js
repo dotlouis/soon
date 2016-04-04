@@ -109,14 +109,59 @@ EventController.between = wrap(async(req, res)=>{
 			rangeUnit: 'months'
 		})(req.body.after, req.body.before, req.body.span);
 
-		// Retreive the events in this date range
-		let existingEvents = await Event.find({
-			chain: { $in: chains },
-			start: { '$lt': before },
-			end: { '$gte': after }
-		}).exec();
 
-		res.json(existingEvents);
+		let selectedEvents = [];
+		let [existingEvents, recurringEvents] = await Promise.all([
+			// Retreive the events in this date range
+			Event.find({
+				chain: { $in: chains },
+				start: { '$lt': before },
+				end: { '$gte': after }
+			}).exec(),
+
+			// Retreive recurring event to generate their matching occurences
+			Event.find({
+				chain: { $in: chains },
+				rrule: { $exists: true }
+			}).exec()
+		]);
+
+
+		// we generate events generated events on the fly
+		let generatedEvents = [];
+		for(let e of recurringEvents){
+			generatedEvents = generatedEvents.concat(e.occur({after, before}));
+		}
+
+		// we strip out existing events from the previously
+		// generated ones
+		let distinctEvents = distinct(generatedEvents, existingEvents);
+
+		// the rest (not already existing) are bulk-saved in DB
+		let savedEvents = [];
+		if(distinctEvents.length > 0)
+			savedEvents = await Event.insertMany(distinctEvents);
+
+		// we concat both existing and newly saved events
+		let allEvents = existingEvents
+		.concat(savedEvents)
+		// we sort them by starting date
+		.sort((a,b)=>{
+			let aTime = a.start.getTime(),
+				bTime = b.start.getTime();
+			if(aTime < bTime) return -1;
+			else if(aTime > bTime) return 1;
+			else return 0;
+		});
+
+		req.log.info({
+			'recurring': recurringEvents.length,
+			'existing': existingEvents.length,
+			'generated': generatedEvents.length,
+			'saved': savedEvents.length
+		});
+
+		res.json(allEvents);
 	}
 	catch(err){
 		switch(err.name){
@@ -129,6 +174,29 @@ EventController.between = wrap(async(req, res)=>{
 		}
 	}
 });
+
+function distinct(generated, existing){
+	let distinctEvents = [];
+
+	for (let g of generated){
+		let exists = false;
+		for(let e of existing){
+			// we either compare to other generatedFrom ids (for existing
+			// generated events) or original ids (for existing original events)
+			let id = (e.generatedFrom ? e.generatedFrom.toString(): e.id);
+
+			// we don't include generated events if they match an existing one
+			// by generatedFrom Id and start date
+			if(g.generatedFrom == id && g.start.getTime() == e.start.getTime()){
+				exists = true;
+				break;
+			}
+		}
+		if(!exists)
+			distinctEvents.push(g);
+	}
+	return distinctEvents;
+}
 
 EventController.getRelated = wrap(async(req, res)=>{
 	try{
