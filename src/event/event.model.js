@@ -18,7 +18,7 @@ class Event{
 	}, defaultSchema);
 
 	@pre('validate')
-	computeTimes(next){
+	computeTimes(){
 		let {start, end, duration} = range({
 			rangeLength: 1,
 			rangeUnit: 'hours'
@@ -27,13 +27,12 @@ class Event{
 		this.start = start;
 		this.end = end;
 		this.duration = duration;
-		next();
 	}
 
-	@pre('validate')
-	computeRRuleDefault(next){
-		this.rrule._dtstart = this.start;
-		next();
+	@post('validate')
+	computeRRuleDefault(){
+		if(this.rrule)
+			this.rrule._dtstart = this.start;
 	}
 
 	addTo(chain){

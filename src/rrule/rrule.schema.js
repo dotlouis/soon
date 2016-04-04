@@ -38,17 +38,15 @@ class RRuleSchema{
 		}
 	};
 
-	@pre('validate')
-	uppercaseFreq(next){
+	@post('validate')
+	uppercaseFreq(){
 		this.freq = this.freq.toUpperCase();
-		next();
 	}
 
-	@pre('validate')
-	computeMaxCount(next){
+	@post('validate')
+	computeMaxCount(){
 		if(this.until)
 			this.count = MAX_COUNT;
-		next();
 	}
 
 	generate(){
@@ -63,7 +61,7 @@ class RRuleSchema{
 }
 
 function validateFreq(freq){
-	return (RRule.FREQUENCIES.indexOf(freq) !== -1);
+	return (RRule.FREQUENCIES.indexOf(freq.toUpperCase()) !== -1);
 }
 
 function validateUntil(until){
