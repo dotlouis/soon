@@ -17,7 +17,7 @@ class RRuleSchema{
 				message: `Frequency must be of ${RRule.FREQUENCIES.join(', ')}`
 			}
 		},
-		_dtstart: { type: Date, required: true, private: true },
+		_dtstart: { type: Date, private: true },
 		until: {
 			type: Date,
 			validate: {
@@ -49,10 +49,18 @@ class RRuleSchema{
 			this.count = MAX_COUNT;
 	}
 
+	get dtstart(){
+		return this._dtstart;
+	}
+
+	set dtstart(val){
+		this._dtstart = val;
+	}
+
 	generate(between){
 		let rrule = new RRule({
 			freq: RRule[this.freq],
-			dtstart: this._dtstart,
+			dtstart: this.dtstart,
 			count: this.count,
 			interval: this.interval,
 			until: this.until
