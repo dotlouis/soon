@@ -14,7 +14,7 @@ class RRuleSchema{
 			required: true,
 			validate: {
 				validator: validateFreq,
-				message: `Frequency must be of ${RRule.FREQUENCIES.join(', ')}`
+				message: `{PATH} must be of ${RRule.FREQUENCIES.join(', ')}`
 			}
 		},
 		_dtstart: { type: Date, private: true },
@@ -22,14 +22,14 @@ class RRuleSchema{
 			type: Date,
 			validate: {
 				validator: validateUntil,
-				message: `until parameter must be greater than event start date`
+				message: `{PATH} must be greater than event start date`
 			}
 		},
         count: {
 			type: Number,
 			default: 30,
 			min: 1,
-			max: [MAX_COUNT, `Generation limited to ${MAX_COUNT} for performance reasons`]
+			max: [MAX_COUNT, `{PATH} limited to ${MAX_COUNT} for performance reasons`]
 		},
 		interval: {
 			type: Number,
