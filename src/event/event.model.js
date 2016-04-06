@@ -34,7 +34,7 @@ class Event{
 	@post('validate')
 	computeRRuleDefault(){
 		if(this.rrule)
-			this.rrule._dtstart = this.start;
+			this.rrule.dtstart = this.start;
 	}
 
 	addTo(chain){
@@ -61,8 +61,6 @@ class Event{
 				createdAt: now,
 				updatedAt: now
 			};
-			// set the dtstart to the start date of the event
-			occurence.rrule.dtstart = o.start;
 			occurences.push(occurence);
 		}
 		return occurences;
