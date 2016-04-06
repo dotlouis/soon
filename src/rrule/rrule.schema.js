@@ -4,7 +4,7 @@ import {Schema, pre, post} from 'mongoose-model-decorators';
 
 const MAX_COUNT = 100;
 
-@Schema
+@Schema({ _id: false })
 class RRuleSchema{
 
 	// https://github.com/jkbrzt/rrule#rrule-constructor
