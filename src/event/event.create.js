@@ -27,7 +27,8 @@ export default wrap(async(req, res)=>{
 		event.addTo(chain);
 
 		// once the chain and event are saved we send the event
-		await Promise.all([chain.save(), event.save()]);
+		await event.save();
+		await chain.save();
 		res.json(event);
 	}
 	catch(err){
