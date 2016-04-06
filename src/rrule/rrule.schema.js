@@ -38,12 +38,12 @@ class RRuleSchema{
 		}
 	};
 
-	@post('validate')
+	@pre('save')
 	uppercaseFreq(){
 		this.freq = this.freq.toUpperCase();
 	}
 
-	@post('validate')
+	@pre('save')
 	computeMaxCount(){
 		if(this.until)
 			this.count = MAX_COUNT;
