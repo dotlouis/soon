@@ -54,12 +54,15 @@ class Event{
 				// Notice how the end parameter is not specified
 				// because computed from start and duration at creation time
 				duration: this.duration,
+				rrule: this.rrule,
 				// we add a reference to the event it was generated from
 				generatedFrom: this.id,
 				// timestamps are not automatically added via insertMany()
 				createdAt: now,
 				updatedAt: now
 			};
+			// set the dtstart to the start date of the event
+			occurence.rrule.dtstart = o.start;
 			occurences.push(occurence);
 		}
 		return occurences;

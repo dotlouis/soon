@@ -13,7 +13,7 @@ export default wrap(async(req, res)=>{
 			throw new NotFound(`Can't find specified ids`);
 
 		// get range from parameters
-		let {start: after, end: before, duration: span} = range({
+		let {start: after, end: before} = range({
 			rangeLength: 1,
 			rangeUnit: 'months'
 		})(req.body.after, req.body.before, req.body.span);
@@ -30,18 +30,18 @@ export default wrap(async(req, res)=>{
 			// Retreive recurring event to generate their matching occurences
 			Event.find({
 				chain: { $in: chains },
+				generatedFrom: { $exists: false },
 				rrule: { $exists: true }
 			}).exec()
 		]);
 
-		// we generate events generated events on the fly
+		// we generate events on the fly
 		let generatedEvents = [];
 		for(let e of recurringEvents){
 			generatedEvents = generatedEvents.concat(e.occur({after, before}));
 		}
 
-		// we strip out existing events from the previously
-		// generated ones
+		// we strip out existing events from the generated ones
 		let distinctEvents = distinct(generatedEvents, existingEvents);
 
 		// the rest (not already existing) are bulk-saved in DB
