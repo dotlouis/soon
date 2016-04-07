@@ -1,34 +1,30 @@
 import Event from './event.model';
-import Chain from '../chain/chain.model';
+import Topic from '../topic/topic.model';
 import {wrap} from '../utils/utils';
 import {BadRequest, NotFound} from '../errors/errors';
 
 export default wrap(async(req, res)=>{
 	try{
-		let chain, event;
+		let topic, event;
 
 		// create the event
 		event = new Event(req.body);
 
-		// either link to an existing chain or create a new one
+		// either link to an existing topic or create a new one
 		if(req.body.linkTo){
-			let linkedEvent = await Event.findById(req.body.linkTo).exec();
-			if(!linkedEvent)
-				throw new NotFound('Cannot find event to link the event to');
-
-			chain = await Chain.findById(linkedEvent.chain).exec();
-			if(!chain)
-				throw new NotFound('Cannot find chain to link the event to');
+			topic = await Topic.findById(req.body.linkTo).exec();
+			if(!topic)
+				throw new NotFound('Cannot find topic to link the event to');
 		}
 		else
-			chain = new Chain();
+			topic = new Topic();
 
-		// link the event to the chain
-		event.addTo(chain);
+		// link the event to the topic
+		event.addTo(topic);
 
-		// once the chain and event are saved we send the event
+		// once the topic and event are saved we send the event
 		await event.save();
-		await chain.save();
+		await topic.save();
 		res.json(event);
 	}
 	catch(err){

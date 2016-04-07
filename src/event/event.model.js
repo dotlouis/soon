@@ -8,8 +8,8 @@ class Event{
 
 	// inherit the default mongoose schema
 	static schema = Object.assign({
-		// the chain the event is linked to
-		chain: { type: ObjectId, ref: 'Chain', required: true, private: true },
+		// the topic the event is linked to
+		topic: { type: ObjectId, ref: 'Topic', required: true },
 		start: { type: Date, required: true },
 		end: { type: Date, required: true },
 		duration: { type: String, required: true },
@@ -37,8 +37,8 @@ class Event{
 			this.rrule.dtstart = this.start;
 	}
 
-	addTo(chain){
-		this.chain = chain._id;
+	addTo(topic){
+		this.topic = topic._id;
 	}
 
 	occur(between){
@@ -48,7 +48,7 @@ class Event{
 		for (let o of this.rrule.generate(between)){
 			// we generate the parameters to create the event occurence
 			let occurence = {
-				chain: this.chain,
+				topic: this.topic,
 				// the start date is the occurence date
 				start: o,
 				// Notice how the end parameter is not specified

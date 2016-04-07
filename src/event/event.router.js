@@ -1,17 +1,12 @@
 import express from 'express';
 import getById from './event.getById';
 import deleteById from './event.deleteById';
-import create from './event.create';
 import getAll from './event.getAll';
-import between from './event.between';
-import getRelated from './event.getRelated';
+import create from './event.create';
 
-let EventRouter = express.Router();
+let eventRouter = express.Router();
 
-EventRouter.route('/:id/related')
-.get(getRelated);
-
-EventRouter.route('/:id')
+eventRouter.route('/:id')
 .get(getById)
 .delete(deleteById);
 
@@ -20,13 +15,8 @@ EventRouter.route('/between')
 // some systems does not accept body parameters for GET
 .post(between);
 
-EventRouter.route('/')
+eventRouter.route('/')
 .get(getAll)
 .post(create);
 
-/* TODO
-¨* - HEAD (check if a record exists)
- * - PUT/PATCH (update a record)
- */
-
-export default EventRouter;
+export default eventRouter;

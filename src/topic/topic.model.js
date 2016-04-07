@@ -3,8 +3,8 @@ import {ObjectId, defaultSchema} from '../mongoose/mongoose';
 import {Model, pre} from 'mongoose-model-decorators';
 
 @Model({ timestamps: true })
-class Chain{
+class Topic{
 	static schema = Object.assign({}, defaultSchema);
 }
 
-export default Chain;
+export default Topic;
