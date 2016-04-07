@@ -1,16 +1,16 @@
 import range from '../range/range';
-import Event from './event.model';
-import Chain from '../chain/chain.model';
+import Event from '../event/event.model';
+import Topic from '../topic/topic.model';
 import {BadRequest, NotFound} from '../errors/errors';
 import {wrap} from '../utils/utils';
 
 export default wrap(async(req, res)=>{
 	try{
-		let chains = await Event.find({
+		let topics = await Topic.find({
 			_id: { $in: req.body.scope }
-		}).distinct('chain').exec();
-		if(chains.length === 0)
-			throw new NotFound(`Can't find specified ids`);
+		}).exec();
+		if(topics.length === 0)
+			throw new NotFound(`Can't find specified topics`);
 
 		// get range from parameters
 		let {start: after, end: before} = range({
@@ -22,14 +22,14 @@ export default wrap(async(req, res)=>{
 		let [existingEvents, recurringEvents] = await Promise.all([
 			// Retreive the events in this date range
 			Event.find({
-				chain: { $in: chains },
+				topic: { $in: topics },
 				start: { '$lt': before },
 				end: { '$gte': after }
 			}).exec(),
 
 			// Retreive recurring event to generate their matching occurences
 			Event.find({
-				chain: { $in: chains },
+				topic: { $in: topics },
 				generatedFrom: { $exists: false },
 				rrule: { $exists: true }
 			}).exec()
