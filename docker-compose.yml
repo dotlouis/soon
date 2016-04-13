@@ -1,0 +1,50 @@
+version: '2'
+
+services:
+
+  api:
+    build: .
+    image: dotlouis/soon
+    networks:
+      - apiMongo
+      - apiKong
+    links:
+      - mongo
+    environment:
+      # reference of the container alias as hostname through the network
+      # https://docs.docker.com/engine/userguide/networking/work-with-networks/
+      MONGO_HOST: mongo
+
+  mongo:
+    image: mongo
+    networks:
+      - apiMongo
+
+  kong:
+    image: mashape/kong
+    ports:
+      - "8000-8001:8000-8001"
+      - "7946:7946"
+      - "7946:7946/udp"
+    links:
+      - api
+      - cassandra
+    networks:
+      - apiKong
+      - cassandraKong
+    restart: always
+    security_opt:
+      - seccomp:unconfined
+
+  cassandra:
+    image: cassandra:2.2.5
+    networks:
+      - cassandraKong
+
+networks:
+  apiMongo:
+    driver: bridge
+  apiKong:
+    driver: bridge
+  cassandraKong:
+    driver: bridge
