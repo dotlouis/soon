@@ -11,8 +11,8 @@ export default wrap(async(req, res)=>{
 		event = new Event(req.body);
 
 		// either link to an existing topic or create a new one
-		if(req.body.linkTo){
-			topic = await Topic.findById(req.body.linkTo).exec();
+		if(req.body.topic){
+			topic = await Topic.findById(req.body.topic).exec();
 			if(!topic)
 				throw new NotFound('Cannot find topic to link the event to');
 		}
