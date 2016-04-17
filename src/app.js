@@ -1,4 +1,5 @@
 import express from 'express';
+import stormpathInit from './stormpath/stormpath';
 import bodyParser from 'body-parser';
 import log,{requestLogger, errorLogger} from './logger/logger';
 import errorHandler,{shutdownOnError} from './error-handler/error-handler';
@@ -12,6 +13,7 @@ const app = express();
 // middlewares (order matters)
 app.use(requestLogger);
 app.use(bodyParser.json());
+app.use(stormpathInit(app));
 app.use(mainRouter);
 
 // error handlers (order matters)
@@ -20,7 +22,7 @@ app.use(errorLogger);
 app.use(shutdownOnError);
 
 // listen incoming connections
-(async()=>{
+app.on('stormpath.ready', async()=>{
 	try{
 		let server = await app.listen(ENV.APP_PORT);
 		let {address,port} = server.address();
@@ -29,6 +31,6 @@ app.use(shutdownOnError);
 	catch(err){
 		log.fatal(err);
 	}
-})();
+});
 
 export default app;

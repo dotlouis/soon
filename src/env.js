@@ -14,3 +14,7 @@ export const MONGO_DB_NAME = process.env.MONGO_DB_NAME || pkg.name;
 export const MONGO_PORT = process.env.MONGO_PORT || '27017';
 export const MONGO_HOST = process.env.MONGO_HOST || 'localhost';
 export const MONGO_URL = process.env.MONGO_URL || `mongodb://${MONGO_HOST}:${MONGO_PORT}/${MONGO_DB_NAME}`;
+
+export const STORMPATH_CLIENT_APIKEY_ID = process.env.STORMPATH_CLIENT_APIKEY_ID;
+export const STORMPATH_CLIENT_APIKEY_SECRET = process.env.STORMPATH_CLIENT_APIKEY_SECRET;
+export const STORMPATH_APPLICATION_HREF = process.env.STORMPATH_APPLICATION_HREF;
