@@ -6,9 +6,7 @@ export function shutdownOnError(err, req, res, next){
 	// shutdown server gracefully if 500;
 	if(!err.code || err.code >= 500){
 		req.log.fatal('SHUTTING DOWN PROCESS...in 5 seconds');
-		setTimeout(function () {
-			process.exit();
-		}, 5000);
+		setTimeout(()=>process.exit(),5000);
 	}
 
 	// doesn't call next() to bypass express default errorHandler

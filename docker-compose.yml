@@ -10,6 +10,7 @@ services:
       - apiKong
     links:
       - mongo
+    restart: always
     environment:
       # reference of the container alias as hostname through the network
       # https://docs.docker.com/engine/userguide/networking/work-with-networks/
@@ -45,6 +46,8 @@ networks:
   apiMongo:
     driver: bridge
   apiKong:
+    driver: bridge
+  apiElastic:
     driver: bridge
   cassandraKong:
     driver: bridge
