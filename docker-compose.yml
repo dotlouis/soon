@@ -47,7 +47,5 @@ networks:
     driver: bridge
   apiKong:
     driver: bridge
-  apiElastic:
-    driver: bridge
   cassandraKong:
     driver: bridge
