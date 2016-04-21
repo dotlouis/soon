@@ -20,6 +20,8 @@ services:
     image: mongo
     networks:
       - apiMongo
+    volumes:
+      - apiData:/data/db
 
   kong:
     image: mashape/kong
@@ -29,7 +31,7 @@ services:
       - "7946:7946/udp"
     links:
       - api
-      - cassandra
+      - cassandra:kong-database
     networks:
       - apiKong
       - cassandraKong
@@ -41,6 +43,8 @@ services:
     image: cassandra:2.2.5
     networks:
       - cassandraKong
+    volumes:
+      - kongData:/var/lib/cassandra
 
 networks:
   apiMongo:
@@ -49,3 +53,11 @@ networks:
     driver: bridge
   cassandraKong:
     driver: bridge
+
+volumes:
+  # Host data of kong from cassandra like apis, plugins, consumers
+  kongData:
+    driver: local
+  # Host data of the api from mongo like events (all the important stuff)
+  apiData:
+    driver: local
